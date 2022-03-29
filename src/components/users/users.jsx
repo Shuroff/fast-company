@@ -11,7 +11,19 @@ const Users = () => {
   }
 
   const renderPhrase = number => {
-    return `${number} человек тусанет с тобой сегодня`
+    let peoplesParty
+    if ((number % 10 === 1 && number > 20) || number === 1) {
+      peoplesParty = 'человек тусанет'
+    } else if (
+      ([2, 3, 4].includes(number % 10) && number > 20) ||
+      [2, 3, 4].includes(number)
+    ) {
+      peoplesParty = 'человека тусанут'
+    } else {
+      peoplesParty = 'человек тусанет'
+    }
+
+    return `${number} ${peoplesParty} с тобой сегодня`
   }
   return users.length === 0 ? (
     <h3>
