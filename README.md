@@ -1,1 +1,1 @@
-# course-project
+# fast-company course-project
