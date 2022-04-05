@@ -1,19 +1,33 @@
 import { useState } from 'react'
+// import PropTypes from 'prop-types'
 import { SearchStatus } from '../searchStatus/searchStatus'
 import { User } from '../user/user'
+import Pagination from '../pagination/pagination'
 import api from '../../api'
+import { paginate } from '../../utils/paginate'
 const Users = () => {
   const [users, setUsers] = useState(api.users.fetchAll())
+  const [currentPage, setCurrentPage] = useState(1)
+  const count = users.length
+  const pageSize = 4
+  const handlePageChange = (event, pageIndex) => {
+    event.preventDefault()
+    setCurrentPage(pageIndex)
+    // console.log(`page: ${pageIndex}`)
+  }
 
   const handleDelete = userId => {
     setUsers(prevState => {
       return prevState.filter(user => user._id !== userId)
     })
   }
+
+  const userCrop = paginate(users, currentPage, pageSize)
+  console.log(userCrop)
   return (
     <>
-      <SearchStatus numOfUsers={users.length} />
-      {users.length > 0 && (
+      <SearchStatus numOfUsers={count} />
+      {count > 0 && (
         <table className='table'>
           <thead>
             <tr>
@@ -27,12 +41,18 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => {
+            {userCrop.map(user => {
               return <User key={user._id} user={user} onDelete={handleDelete} />
             })}
           </tbody>
         </table>
       )}
+      <Pagination
+        itemsCount={count}
+        pageSize={pageSize}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </>
   )
 }
