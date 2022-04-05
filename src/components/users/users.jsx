@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Badge } from '../badge/badge'
+import { SearchStatus } from '../searchStatus/searchStatus'
+import { User } from '../user/user'
 import api from '../../api'
 const Users = () => {
   const [users, setUsers] = useState(api.users.fetchAll())
@@ -9,29 +10,9 @@ const Users = () => {
       return prevState.filter(user => user._id !== userId)
     })
   }
-
-  const renderPhrase = number => {
-    let peoplesParty
-    if ((number % 10 === 1 && number > 20) || number === 1) {
-      peoplesParty = 'человек тусанет'
-    } else if (
-      ([2, 3, 4].includes(number % 10) && number > 20) ||
-      [2, 3, 4].includes(number)
-    ) {
-      peoplesParty = 'человека тусанут'
-    } else {
-      peoplesParty = 'человек тусанет'
-    }
-
-    return `${number} ${peoplesParty} с тобой сегодня`
-  }
-  return users.length === 0 ? (
-    <h3>
-      <Badge color='danger' name='Никто с тобой не тусанет' />
-    </h3>
-  ) : (
+  return (
     <>
-      <h3>{<Badge color='primary' name={renderPhrase(users.length)} />}</h3>
+      <SearchStatus numOfUsers={users.length} />
       <table className='table'>
         <thead>
           <tr>
@@ -40,39 +21,13 @@ const Users = () => {
             <th scope='col'>Профессия</th>
             <th scope='col'>Встретился, раз</th>
             <th scope='col'>Оценка</th>
+            <th scope='col'>Избранное</th>
             <th scope='col'></th>
           </tr>
         </thead>
         <tbody>
           {users.map(user => {
-            return (
-              <tr key={user._id}>
-                <th>{user.name}</th>
-                <th>
-                  {user.qualities.map(qual => {
-                    return (
-                      <Badge
-                        key={user._id + qual.name}
-                        name={qual.name}
-                        color={qual.color}
-                      />
-                    )
-                  })}
-                </th>
-                <th>{user.profession.name}</th>
-                <th>{user.completedMeetings}</th>
-                <th>{user.rate}</th>
-                <th>
-                  <button
-                    type='button'
-                    className='btn btn-danger'
-                    onClick={handleDelete.bind(null, user._id)}
-                  >
-                    delete
-                  </button>
-                </th>
-              </tr>
-            )
+            return <User key={user._id} user={user} onDelete={handleDelete} />
           })}
         </tbody>
       </table>
