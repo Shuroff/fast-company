@@ -9,6 +9,7 @@
     "bootstrap": "^5.1.0",
     "bootstrap-icons": "^1.8.1",
     "lodash": "^4.17.15",
+    "npx": "^10.2.2",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-bootstrap-icons": "^1.8.1",
@@ -21,7 +22,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format": "npx prettier-write"
+    "format": "npx prettier --write ."
   },
   "eslintConfig": {
     "extends": [
