@@ -81,14 +81,14 @@ const Users = () => {
             </tbody>
           </table>
         )}
-      </div>
-      <div className='d-flex justify-content-center'>
-        <Pagination
-          itemsCount={count}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
+        <div className='d-flex justify-content-center'>
+          <Pagination
+            itemsCount={count}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
       </div>
     </div>
   )
