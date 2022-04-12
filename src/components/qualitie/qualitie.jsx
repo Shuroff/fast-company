@@ -5,6 +5,6 @@ const Qualitie = (props) => {
     return <Badge {...props} />
 }
 Qualitie.propTypes = {
-    props: PropTypes.any.isRequired,
+    props: PropTypes.any,
 }
 export default Qualitie

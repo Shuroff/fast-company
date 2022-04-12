@@ -22,5 +22,6 @@ module.exports = {
     'import/newline-after-import': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/function-component-definition': 'off',
+		'space-before-function-paren': ['error', {anonymous: 'always', named: 'never'}]
   },
 }
