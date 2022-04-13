@@ -7,7 +7,7 @@ import api from '../../api'
 import { paginate } from '../../utils/paginate'
 import GroupList from '../groupList/groupList'
 const Users = () => {
-  const [users, setUsers] = useState(api.users.fetchAll())
+  const [users, setUsers] = useState()
   const [currentPage, setCurrentPage] = useState(1)
   const [professions, setProfessions] = useState()
   const [selectedProf, setSelectedProf] = useState()
@@ -16,12 +16,18 @@ const Users = () => {
     api.professions.fetchAll().then((data) => {
       setProfessions(data)
     })
+    api.users.fetchAll().then((data) => {
+      setUsers(data)
+    })
   }, [])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedProf])
 
   const handleProfessionSelect = (item) => {
     setSelectedProf(item)
   }
-
   const handlePageChange = (event, pageIndex) => {
     event.preventDefault()
     setCurrentPage(pageIndex)
@@ -32,10 +38,12 @@ const Users = () => {
       return prevState.filter((user) => user._id !== userId)
     })
   }
-
   const filteredUsers = selectedProf
-    ? users.filter((user) => user.profession === selectedProf)
+    ? users.filter((user) => user.profession.name === selectedProf.name)
     : users
+  if (!filteredUsers) {
+    return null
+  }
 
   const count = filteredUsers.length
   const userCrop = paginate(filteredUsers, currentPage, pageSize)
