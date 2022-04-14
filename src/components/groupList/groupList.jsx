@@ -6,13 +6,37 @@ const GroupList = ({
   onItemSelect,
   selectedItem,
 }) => {
+  if (Array.isArray(items)) {
+    return (
+      <ul className='list-group'>
+        {items.map((item) => (
+          <li
+            key={item[valueProperty]}
+            className={
+              'list-group-item' +
+              (JSON.stringify(item) === JSON.stringify(selectedItem)
+                ? ' active'
+                : '')
+            }
+            onClick={() => onItemSelect(item)}
+            role='button'
+          >
+            {item[contentProperty]}
+          </li>
+        ))}
+      </ul>
+    )
+  }
   return (
     <ul className='list-group'>
       {Object.keys(items).map((key) => (
         <li
           key={items[key][valueProperty]}
           className={
-            'list-group-item' + (items[key] === selectedItem ? ' active' : '')
+            'list-group-item' +
+            (JSON.stringify(items[key]) === JSON.stringify(selectedItem)
+              ? ' active'
+              : '')
           }
           onClick={() => onItemSelect(items[key])}
           role='button'

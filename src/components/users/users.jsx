@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-// import PropTypes from 'prop-types'
 import SearchStatus from '../searchStatus/searchStatus'
 import User from '../user/user'
 import Pagination from '../pagination/pagination'
@@ -11,7 +10,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [professions, setProfessions] = useState()
   const [selectedProf, setSelectedProf] = useState()
-  const pageSize = 4
+  const pageSize = 2
   useEffect(() => {
     api.professions.fetchAll().then((data) => {
       setProfessions(data)
@@ -38,11 +37,15 @@ const Users = () => {
       return prevState.filter((user) => user._id !== userId)
     })
   }
+
   const filteredUsers = selectedProf
-    ? users.filter((user) => user.profession.name === selectedProf.name)
+    ? users.filter(
+        (user) =>
+          JSON.stringify(user.profession) === JSON.stringify(selectedProf),
+      )
     : users
   if (!filteredUsers) {
-    return null
+    return 'loading...'
   }
 
   const count = filteredUsers.length
