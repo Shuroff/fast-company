@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import SearchStatus from '../searchStatus/searchStatus'
-import User from '../user/user'
 import Pagination from '../pagination/pagination'
 import api from '../../api'
 import { paginate } from '../../utils/paginate'
 import GroupList from '../groupList/groupList'
+import UsersTable from '../usersTable/usersTable'
 const Users = () => {
   const [users, setUsers] = useState()
   const [currentPage, setCurrentPage] = useState(1)
@@ -71,26 +71,7 @@ const Users = () => {
       <div className='d-flex flex-column'>
         <SearchStatus numOfUsers={count} />
         {count > 0 && (
-          <table className='table'>
-            <thead>
-              <tr>
-                <th scope='col'>Имя</th>
-                <th scope='col'>Качества</th>
-                <th scope='col'>Профессия</th>
-                <th scope='col'>Встретился, раз</th>
-                <th scope='col'>Оценка</th>
-                <th scope='col'>Избранное</th>
-                <th scope='col'></th>
-              </tr>
-            </thead>
-            <tbody>
-              {userCrop.map((user) => {
-                return (
-                  <User key={user._id} user={user} onDelete={handleDelete} />
-                )
-              })}
-            </tbody>
-          </table>
+          <UsersTable users={userCrop} handleDelete={handleDelete} />
         )}
         <div className='d-flex justify-content-center'>
           <Pagination
