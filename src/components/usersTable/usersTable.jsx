@@ -1,29 +1,37 @@
 import PropTypes from 'prop-types'
 import User from '../user/user'
-const UsersTable = ({ users, handleDelete }) => {
+const UsersTable = ({ users, currentSort, handleDelete, onSort }) => {
+  const handleSort = (item) => {
+    if (currentSort.iter === item) {
+      onSort({
+        ...currentSort,
+        order: currentSort.order === 'asc' ? 'desc' : 'asc',
+      })
+    } else {
+      onSort({ iter: item, order: 'asc' })
+    }
+  }
   return (
     <table className='table'>
       <thead>
         <tr>
-          <th onClick={() => onSort()} scope='col'>
+          <th onClick={() => handleSort('name')} scope='col'>
             Имя
           </th>
-          <th onClick={() => onSort()} scope='col'>
-            Качества
-          </th>
-          <th onClick={() => onSort()} scope='col'>
+          <th scope='col'>Качества</th>
+          <th onClick={() => handleSort('profession.name')} scope='col'>
             Профессия
           </th>
-          <th onClick={() => onSort()} scope='col'>
+          <th onClick={() => handleSort('completedMeetings')} scope='col'>
             Встретился, раз
           </th>
-          <th onClick={() => onSort()} scope='col'>
+          <th onClick={() => handleSort('rate')} scope='col'>
             Оценка
           </th>
-          <th onClick={() => onSort()} scope='col'>
+          <th onClick={() => handleSort('bookmark')} scope='col'>
             Избранное
           </th>
-          <th onClick={() => onSort()} scope='col'></th>
+          <th />
         </tr>
       </thead>
       <tbody>
@@ -36,5 +44,7 @@ const UsersTable = ({ users, handleDelete }) => {
 }
 UsersTable.propTypes = {
   users: PropTypes.array.isRequired,
+  handleSort: PropTypes.func.isRequired,
+  currentSort: PropTypes.object.isRequired,
 }
 export default UsersTable
