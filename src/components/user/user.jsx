@@ -1,5 +1,5 @@
 import Qualitie from '../qualitie/qualitie'
-import { MyBookmark } from '../bookmark/bookmark'
+import { MyBookmark } from '../bookmark/myBookmark'
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
