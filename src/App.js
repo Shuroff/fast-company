@@ -1,7 +1,7 @@
-import Users from './components/users/users'
+import Navbar from './components/navbar/navbar'
 
 function App() {
-  return <Users />
+  return <Navbar />
 }
 
 export default App
