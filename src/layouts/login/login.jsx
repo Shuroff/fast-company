@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import TextField from '../../components/textField/textField'
+import { validator } from '../../utils/validator'
 const Login = () => {
   const [data, setData] = useState({ email: '', password: '' })
-  const [errors, setErrors] = useState()
+  const [errors, setErrors] = useState({})
   const handleChange = ({ target }) => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }))
   }
@@ -13,18 +14,19 @@ const Login = () => {
     if (!isValid) return
     console.log(data)
   }
+  const validatorConfig = {
+    email: {
+      isRequired: { message: 'Электронная почта обязательна для заполнения' },
+    },
+    password: { isRequired: { message: 'Пароль обязателен для заполнения' } },
+  }
 
   useEffect(() => {
     validate()
   }, [data])
 
   const validate = () => {
-    const errors = {}
-    for (const fieldName in data) {
-      if (data[fieldName].trim() === '') {
-        errors[fieldName] = `${fieldName} обязательно дял заполнения`
-      }
-    }
+    const errors = validator(data, validatorConfig)
     setErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -36,6 +38,7 @@ const Login = () => {
         name='email'
         onChange={handleChange}
         label='Электронная почта'
+        error={errors.email}
       />
       <TextField
         value={data.password}
@@ -43,6 +46,7 @@ const Login = () => {
         name='password'
         onChange={handleChange}
         label='Пароль'
+        error={errors.password}
       />
       <button type='submit'>Submit</button>
     </form>
