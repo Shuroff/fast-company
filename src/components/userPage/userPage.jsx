@@ -14,7 +14,7 @@ const UserPage = ({ id }) => {
   const handleClick = () => {
     history.push('/users')
   }
-  console.log(history)
+
   return (
     <>
       {user ? (

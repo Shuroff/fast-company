@@ -5,6 +5,7 @@ import api from '../../api'
 import { paginate } from '../../utils/paginate'
 import GroupList from '../../components/groupList/groupList'
 import UsersTable from '../../components/usersTable/usersTable'
+import Search from '../search/search'
 import _ from 'lodash'
 const UsersList = () => {
   const [users, setUsers] = useState()
@@ -12,6 +13,8 @@ const UsersList = () => {
   const [professions, setProfessions] = useState()
   const [selectedProf, setSelectedProf] = useState()
   const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
+  const [searchString, setSearchString] = useState('')
+  const [flag, setFlag] = useState(false)
   const pageSize = 8
   useEffect(() => {
     api.professions.fetchAll().then((data) => {
@@ -24,10 +27,18 @@ const UsersList = () => {
 
   useEffect(() => {
     setCurrentPage(1)
+    if (flag) {
+      setSearchString('')
+    }
   }, [selectedProf])
+
+  useEffect(() => {
+    setFlag(false)
+  }, [searchString])
 
   const handleProfessionSelect = (item) => {
     setSelectedProf(item)
+    setFlag(true)
   }
   const handlePageChange = (event, pageIndex) => {
     event.preventDefault()
@@ -51,6 +62,12 @@ const UsersList = () => {
   if (!filteredUsers) {
     return 'loading...'
   }
+  const foundedUsers = searchString
+    ? filteredUsers.filter((user) =>
+        user.name.toLowerCase().includes(searchString.toLowerCase()),
+      )
+    : filteredUsers
+
   const handleToggleFill = (id) => {
     setUsers((prevState) => {
       return prevState.map((user) => {
@@ -61,12 +78,14 @@ const UsersList = () => {
       })
     })
   }
-  const count = filteredUsers.length
-  const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
+  const count = foundedUsers.length
+  const sortedUsers = _.orderBy(foundedUsers, [sortBy.path], [sortBy.order])
   const userCrop = paginate(sortedUsers, currentPage, pageSize)
   const clearFilter = () => {
     setSelectedProf(null)
+    setSearchString('')
   }
+  const onSearch = () => setSelectedProf(null)
   return (
     <>
       <div className='d-flex'>
@@ -84,6 +103,12 @@ const UsersList = () => {
         )}
         <div className='d-flex flex-column'>
           <SearchStatus numOfUsers={count} />
+          <Search
+            value={searchString}
+            onChange={setSearchString}
+            onSearch={onSearch}
+            selectedProf={selectedProf}
+          />
           {count > 0 && (
             <UsersTable
               toggleFill={handleToggleFill}
