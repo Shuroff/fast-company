@@ -16,12 +16,16 @@ module.exports = {
     indent: ['error', 4],
     'linebreak-style': 0,
     semi: [2, 'never'],
+    'multiline-ternary': ['off'],
     quotes: ['error', 'single'],
     'jsx-quotes': [2, 'prefer-single'],
     'import/prefer-default-export': 'off',
     'import/newline-after-import': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/function-component-definition': 'off',
-		'space-before-function-paren': ['error', {anonymous: 'always', named: 'never'}]
+    'space-before-function-paren': [
+      'error',
+      { anonymous: 'always', named: 'never' },
+    ],
   },
 }

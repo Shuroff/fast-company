@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import Qualitie from '../qualitie/qualitie'
+import Qualitie from './qualitie'
 const QualitiesList = ({ qualities }) => {
   return (
     <>

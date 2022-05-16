@@ -1,4 +1,4 @@
-import Badge from '../badge/badge'
+import Badge from '../common/badge'
 import PropTypes from 'prop-types'
 const SearchStatus = ({ numOfUsers }) => {
   const renderPhrase = (number) => {

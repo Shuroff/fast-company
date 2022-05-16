@@ -1,7 +1,7 @@
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import Users from '../../layouts/users/users'
-import Login from '../../layouts/login/login'
-import Main from '../../layouts/main/main'
+import Users from '../../layouts/users'
+import Login from '../../layouts/login'
+import Main from '../../layouts/main'
 const Navbar = () => {
   return (
     <>
@@ -24,7 +24,7 @@ const Navbar = () => {
       </ul>
       <Switch>
         <Route exact path='/' component={Main} />
-        <Route path='/login' component={Login} />
+        <Route path='/login/:type?' component={Login} />
         <Route path='/users/:id?' component={Users} />
         <Redirect to='/' />
       </Switch>
