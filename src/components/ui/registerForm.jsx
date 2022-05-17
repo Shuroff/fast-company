@@ -2,13 +2,19 @@ import { useEffect, useState } from 'react'
 import TextField from '../common/form/textField'
 import SelectField from '../common/form/selectField'
 import { validator } from '../../utils/validator'
+import RadioField from '../common/form/radioField'
 import api from '../../api'
+import MultiSelectField from '../common/form/multiSelectField'
 const RegisterForm = () => {
   const [data, setData] = useState({
     email: '',
     password: '',
     profession: '',
+    sex: 'male',
+    qualities: [],
   })
+  console.log(data.qualities)
+  const [qualities, setQualities] = useState({})
   const [professions, setProfessions] = useState()
   const [errors, setErrors] = useState({})
 
@@ -16,9 +22,12 @@ const RegisterForm = () => {
     api.professions.fetchAll().then((data) => {
       setProfessions(data)
     })
+    api.qualities.fetchAll().then((data) => {
+      setQualities(data)
+    })
   }, [])
 
-  const handleChange = ({ target }) => {
+  const handleChange = (target) => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }))
   }
 
@@ -90,6 +99,23 @@ const RegisterForm = () => {
         value={data.profession}
         onChange={handleChange}
         label='Выбери свою профессию'
+      />
+      <RadioField
+        options={[
+          { name: 'Male', value: 'male' },
+          { name: 'Female', value: 'female' },
+          { name: 'Other', value: 'other' },
+        ]}
+        value={data.sex}
+        name='sex'
+        onChange={handleChange}
+        label='Выберите ваш пол'
+      />
+      <MultiSelectField
+        options={qualities}
+        onChange={handleChange}
+        name='qualities'
+        label='Выберите ваши качества'
       />
       <button
         className='btn btn-primary w-100 mx-auto'
