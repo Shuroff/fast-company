@@ -5,6 +5,7 @@ import { validator } from '../../utils/validator'
 import RadioField from '../common/form/radioField'
 import api from '../../api'
 import MultiSelectField from '../common/form/multiSelectField'
+import CheckBoxField from '../common/form/checkBoxField'
 const RegisterForm = () => {
   const [data, setData] = useState({
     email: '',
@@ -12,8 +13,8 @@ const RegisterForm = () => {
     profession: '',
     sex: 'male',
     qualities: [],
+    licence: false,
   })
-  console.log(data.qualities)
   const [qualities, setQualities] = useState({})
   const [professions, setProfessions] = useState()
   const [errors, setErrors] = useState({})
@@ -62,6 +63,12 @@ const RegisterForm = () => {
         message: 'Обязательно выберите вашу профессию',
       },
     },
+    licence: {
+      isRequired: {
+        message:
+          'Вы не можете использовать наш сервис без подтверждения лицензионного соглашения',
+      },
+    },
   }
 
   useEffect(() => {
@@ -99,6 +106,7 @@ const RegisterForm = () => {
         value={data.profession}
         onChange={handleChange}
         label='Выбери свою профессию'
+        name='profession'
       />
       <RadioField
         options={[
@@ -114,9 +122,18 @@ const RegisterForm = () => {
       <MultiSelectField
         options={qualities}
         onChange={handleChange}
+        defaultValue={data.qualities}
         name='qualities'
         label='Выберите ваши качества'
       />
+      <CheckBoxField
+        value={data.licence}
+        onChange={handleChange}
+        name='licence'
+        error={errors.licence}
+      >
+        Подтвердить <a>лицензионное соглашение</a>
+      </CheckBoxField>
       <button
         className='btn btn-primary w-100 mx-auto'
         type='submit'

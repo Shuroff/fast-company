@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import QualitiesList from '../../ui/qualities/qualitiesList'
 import { useHistory } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 const UserPage = ({ id }) => {
   const [user, setUser] = useState(null)
   useEffect(() => {
@@ -24,7 +25,7 @@ const UserPage = ({ id }) => {
           <QualitiesList qualities={user.qualities} />
           <p>completedMeetings: {user.completedMeetings}</p>
           <h2>Rate: {user.rate}</h2>
-          <button onClick={handleClick}>Все Пользователи</button>
+          <Link to={`/users/${id}/edit`}>Изменить</Link>
         </div>
       ) : (
         <h1>Loading</h1>
