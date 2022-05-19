@@ -25,7 +25,9 @@ const UserPage = ({ id }) => {
           <QualitiesList qualities={user.qualities} />
           <p>completedMeetings: {user.completedMeetings}</p>
           <h2>Rate: {user.rate}</h2>
-          <Link to={`/users/${id}/edit`}>Изменить</Link>
+          <Link role='button' to={`/users/${id}/edit`}>
+            <button>Изменить</button>
+          </Link>
         </div>
       ) : (
         <h1>Loading</h1>

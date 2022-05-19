@@ -5,6 +5,7 @@ import RadioField from '../common/form/radioField'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../../api'
+import * as yup from 'yup'
 const EditUserForm = () => {
   const [data, setData] = useState({
     name: '',
@@ -16,6 +17,7 @@ const EditUserForm = () => {
   const [professions, setProfessions] = useState()
   const [qualities, setQualities] = useState()
   const [errors, setErrors] = useState({})
+  const [isLoading, setLoading] = useState(true)
   const params = useParams()
   const id = params.id
   useEffect(() => {
@@ -26,25 +28,62 @@ const EditUserForm = () => {
       setQualities(data)
     })
     api.users.getById(id).then((user) => {
-      console.log('user', user)
       setData({
         name: user.name,
         email: user.email,
-        profession: user.profession,
-        qualities: user.qualities,
+        profession: user.profession._id,
+        qualities: user.qualities.map((qual) => ({
+          value: qual._id,
+          label: qual.name,
+        })),
         sex: user.sex,
       })
+      setLoading(false)
     })
   }, [])
   const handleChange = (target) => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }))
   }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log(data)
+  }
+
+  const validateSchema = yup.object().shape({
+    email: yup
+      .string()
+      .required('Электронная почта обязательна для заполнения')
+      .email('Email введён некорректно'),
+    name: yup.string().required('Имя не должно быть пустым'),
+  })
+
+  useEffect(() => {
+    validate()
+  }, [data])
+
+  const validate = () => {
+    validateSchema
+      .validate(data)
+      .then(() => {
+        setErrors({})
+      })
+      .catch((err) => {
+        setErrors({
+          [err.path]: err.message,
+        })
+      })
+    return Object.keys(errors).length === 0
+  }
+  const isValid = Object.keys(errors).length === 0
   return (
     <>
-      {data.name ? (
+      {!isLoading && professions ? (
         <div className=' container m-4'>
           <div className='row align-items-center'>
-            <form className='p-4 mx-auto shadow col-sm-6'>
+            <form
+              className='p-4 mx-auto shadow col-sm-6'
+              onSubmit={handleSubmit}
+            >
               <TextField
                 value={data.name}
                 label='Имя'
@@ -86,7 +125,11 @@ const EditUserForm = () => {
                 defaultValue={data.qualities}
               />
               <div className='d-grid gap-2'>
-                <button className='btn btn-primary' type='button'>
+                <button
+                  className='btn btn-primary'
+                  type='submit'
+                  disabled={!isValid}
+                >
                   Обновить
                 </button>
               </div>
@@ -94,7 +137,7 @@ const EditUserForm = () => {
           </div>
         </div>
       ) : (
-        'loading...'
+        'Loading...'
       )}
     </>
   )

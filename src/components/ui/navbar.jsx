@@ -27,7 +27,7 @@ const Navbar = () => {
         <Route exact path='/' component={Main} />
         <Route path='/login/:type?' component={Login} />
         <Route exact path='/users/:id?' component={Users} />
-        <Route path={'/users/:id/edit'} component={EditUserForm} />
+        <Route exact path={'/users/:id/edit'} component={EditUserForm} />
         <Redirect to='/' />
       </Switch>
     </>
