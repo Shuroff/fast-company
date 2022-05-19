@@ -2,7 +2,7 @@ import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import Users from '../../layouts/users'
 import Login from '../../layouts/login'
 import Main from '../../layouts/main'
-import EditUser from '../../layouts/editUser'
+import EditUserForm from './editUserForm'
 const Navbar = () => {
   return (
     <>
@@ -27,7 +27,7 @@ const Navbar = () => {
         <Route exact path='/' component={Main} />
         <Route path='/login/:type?' component={Login} />
         <Route exact path='/users/:id?' component={Users} />
-        <Route path={'/users/:id/edit'} component={EditUser} />
+        <Route path={'/users/:id/edit'} component={EditUserForm} />
         <Redirect to='/' />
       </Switch>
     </>

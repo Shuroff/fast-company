@@ -9,7 +9,6 @@ import CheckBoxField from '../common/form/checkBoxField'
 const RegisterForm = () => {
   const [data, setData] = useState({
     email: '',
-    password: '',
     profession: '',
     sex: 'male',
     qualities: [],
