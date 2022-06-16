@@ -11,18 +11,24 @@ export default function stampToDate(timestamp) {
   } else if (diff < 60 * 30) {
     date = '30 минут назад'
   } else if (diff < 60 * 60 * 24) {
-    date = tempDate.getHours() + '.' + tempDate.getMinutes()
+    let options = {
+      hour: 'numeric',
+      minute: 'numeric',
+    }
+    date = tempDate.toLocaleString('en-US', options)
   } else if (tempDate.getFullYear() === new Date().getFullYear()) {
-    date = tempDate.getDay() + '.' + tempDate.getMonth()
-    console.log(date)
+    let options = {
+      month: 'long',
+      day: 'numeric',
+    }
+    date = tempDate.toLocaleString('en-US', options)
   } else {
-    date =
-      tempDate.getDay() +
-      '.' +
-      tempDate.getMonth() +
-      '.' +
-      tempDate.getFullYear()
-    console.log(date)
+    let options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }
+    date = tempDate.toLocaleString('en-US', options)
   }
   return date
 }

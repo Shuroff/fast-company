@@ -1,11 +1,11 @@
 import { CaretDownFill, CaretUp } from 'react-bootstrap-icons'
 
-const UserCard = ({ user }) => {
+const UserCard = ({ user, onClick }) => {
   return (
     <div className='card mb-3'>
       <div className='card-body'>
         <button className='position-absolute top-0 end-0 btn btn-light btn-sm'>
-          <i className='bi bi-gear'></i>
+          <i className='bi bi-gear' onClick={onClick}></i>
         </button>
         <div className='d-flex flex-column align-items-center text-center position-relative'>
           <img

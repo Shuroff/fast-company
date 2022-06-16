@@ -1,12 +1,11 @@
-import userApi from '../../api/fake.api/user.api'
-import stampToDate from '../../utils/stampToDate'
+import userApi from '../../../api/fake.api/user.api'
+import stampToDate from '../../../utils/stampToDate'
 import { useState, useEffect } from 'react'
-const Comment = ({ comment }) => {
+const Comment = ({ comment, handleDelete }) => {
   const [name, setName] = useState('')
   useEffect(() => {
     userApi.getById(comment.userId).then(user => setName(user.name))
   }, [])
-  console.log('name', name)
   return (
     <div className='bg-light card-body  mb-3'>
       <div className='row'>
@@ -33,7 +32,10 @@ const Comment = ({ comment }) => {
                       {stampToDate(Number(comment.created_at))}
                     </span>
                   </p>
-                  <button className='btn btn-sm text-primary d-flex align-items-center'>
+                  <button
+                    className='btn btn-sm text-primary d-flex align-items-center'
+                    onClick={() => handleDelete(comment._id)}
+                  >
                     <i className='bi bi-x-lg'></i>
                   </button>
                 </div>
