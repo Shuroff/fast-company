@@ -3,27 +3,21 @@ import PropTypes from 'prop-types'
 import axios from 'axios'
 import userService from '../services/user.service'
 import { toast } from 'react-toastify'
+import { setTokens } from '../services/localStorage.service'
 const httpAuth = axios.create()
 const AuthContext = createContext()
 
 export const useAuth = () => {
   return useContext(AuthContext)
 }
-const TOKEN_KEY = 'jwt_token'
-const REFRESH_KEY = 'jwt-refresh_token'
-const EXPIRES_KEY = 'jwt-expires'
+
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState({})
   const [error, setError] = useState(null)
-  function setTokens({ refreshToken, idToken, expiresIn = 3600 }) {
-    const expiresDate = new Date().getTime() + expiresIn * 1000
-    localStorage.setItem(TOKEN_KEY, idToken)
-    localStorage.setItem(REFRESH_KEY, refreshToken)
-    localStorage.setItem(EXPIRES_KEY, expiresIn)
-  }
+
   async function signUp({ email, password, ...rest }) {
-    const key = 'AIzaSyCRfYTRuJu-jdjUtqftrEUHflUPmZamtCs'
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${key}`
+    const keyFirebasePrivate = 'AIzaSyCRfYTRuJu-jdjUtqftrEUHflUPmZamtCs'
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`
     try {
       const { data } = await httpAuth.post(url, {
         email,
@@ -32,9 +26,19 @@ const AuthProvider = ({ children }) => {
       })
       setTokens(data)
       await createUser({ _id: data.localId, email, ...rest })
-      console.log({ data })
     } catch (error) {
       errorCatcher(error)
+      const { code, message } = error.response.data.error
+      console.log({ code, message })
+      if (code === 400) {
+        if (message === 'EMAIL_EXISTS') {
+          const errorObject = {
+            email: 'Пользователь с таким Email уже существует',
+          }
+          throw errorObject
+        }
+      }
+      throw new Error()
     }
   }
   async function createUser(data) {
