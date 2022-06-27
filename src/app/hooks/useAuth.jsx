@@ -4,7 +4,12 @@ import axios from 'axios'
 import userService from '../services/user.service'
 import { toast } from 'react-toastify'
 import { setTokens } from '../services/localStorage.service'
-const httpAuth = axios.create()
+const httpAuth = axios.create({
+  baseURL: 'https://identitytoolkit.googleapis.com/v1/',
+  params: {
+    key: process.env.REACT_APP_FIREBASE_KEY,
+  },
+})
 const AuthContext = createContext()
 
 export const useAuth = () => {
@@ -16,8 +21,7 @@ const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null)
 
   async function signUp({ email, password, ...rest }) {
-    const keyFirebasePrivate = 'AIzaSyCRfYTRuJu-jdjUtqftrEUHflUPmZamtCs'
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`
+    const url = 'accounts:signUp'
     try {
       const { data } = await httpAuth.post(url, {
         email,
@@ -41,6 +45,28 @@ const AuthProvider = ({ children }) => {
       throw new Error()
     }
   }
+  async function logIn({ email, password }) {
+    const url = `accounts:signInWithPassword`
+    try {
+      const { data } = await httpAuth.post(url, {
+        email,
+        password,
+        returnSecureToken: true,
+      })
+      setTokens(data)
+      console.log(data)
+    } catch (error) {
+      const { code, message } = error.response.data.error
+      if (code === 400) {
+        switch (message) {
+          case 'INVALID_PASSWORD':
+            throw new Error('Email или пароль введены некорректно')
+          default:
+            throw new Error('Слишком много попыток входа.Попробуйте позднее')
+        }
+      }
+    }
+  }
   async function createUser(data) {
     try {
       const { content } = userService.create(data)
@@ -60,7 +86,7 @@ const AuthProvider = ({ children }) => {
     }
   }, [error])
   return (
-    <AuthContext.Provider value={{ signUp, currentUser }}>
+    <AuthContext.Provider value={{ signUp, currentUser, logIn }}>
       {children}
     </AuthContext.Provider>
   )
