@@ -2,17 +2,20 @@ import { orderBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
 // import api from "../../api";
 import { useParams } from 'react-router-dom'
+import { useComments } from '../../hooks/useComments'
 import CommentsList, { AddCommentForm } from '../common/comments'
 
 const Comments = () => {
   const { userId } = useParams()
   const [comments, setComments] = useState([])
+  const { createComment } = useComments()
   useEffect(() => {
     // api.comments
     //     .fetchCommentsForUser(userId)
     //     .then((data) => setComments(data));
   }, [])
   const handleSubmit = data => {
+    createComment(data)
     // api.comments
     //     .add({ ...data, pageId: userId })
     //     .then((data) => setComments([...comments, data]));

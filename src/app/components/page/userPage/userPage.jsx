@@ -4,10 +4,10 @@ import MeetingsCard from '../../ui/meetingsCard'
 import Comments from '../../ui/comments'
 import { useUser } from '../../../hooks/useUsers'
 import PropTypes from 'prop-types'
+import CommentsProvider from '../../../hooks/useComments'
 const UserPage = ({ userId }) => {
   const { getUserById } = useUser()
   const user = getUserById(userId)
-  console.log('user', user)
   if (user) {
     return (
       <div className='container'>
@@ -18,7 +18,9 @@ const UserPage = ({ userId }) => {
             <MeetingsCard value={user.completedMeetings} />
           </div>
           <div className='col-md-8'>
-            <Comments />
+            <CommentsProvider>
+              <Comments />
+            </CommentsProvider>
           </div>
         </div>
       </div>
