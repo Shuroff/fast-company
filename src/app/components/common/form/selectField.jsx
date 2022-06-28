@@ -21,7 +21,6 @@ const SelectField = ({
     !Array.isArray(options) && typeof options === 'object'
       ? Object.values(options)
       : options
-  console.log('optionsArray', optionsArray)
   return (
     <div className='mb-4'>
       <label htmlFor={name} className='form-label'>
