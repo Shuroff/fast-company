@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { validator } from '../../../utils/validator'
-import api from '../../../api'
+// import api from '../../../api'
 import TextField from '../../common/form/textField'
 import SelectField from '../../common/form/selectField'
 import RadioField from '../../common/form/radioField'
@@ -49,12 +49,12 @@ const EditUserPage = () => {
     const isValid = validate()
     if (!isValid) return
     const { profession, qualities } = data
-    api.users
-      .update(userId, {
-        ...data,
-        profession: getProfessionById(profession),
-        qualities: getQualities(qualities),
-      })
+      // api.users
+      //   .update(userId, {
+      //     ...data,
+      //     profession: getProfessionById(profession),
+      //     qualities: getQualities(qualities),
+      //   })
       .then(data => history.push(`/users/${data._id}`))
     console.log({
       ...data,
@@ -67,29 +67,29 @@ const EditUserPage = () => {
   }
   useEffect(() => {
     setIsLoading(true)
-    api.users.getById(userId).then(({ profession, qualities, ...data }) =>
-      setData(prevState => ({
-        ...prevState,
-        ...data,
-        qualities: transformData(qualities),
-        profession: profession._id,
-      }))
-    )
-    api.professions.fetchAll().then(data => {
-      const professionsList = Object.keys(data).map(professionName => ({
-        label: data[professionName].name,
-        value: data[professionName]._id,
-      }))
-      setProfession(professionsList)
-    })
-    api.qualities.fetchAll().then(data => {
-      const qualitiesList = Object.keys(data).map(optionName => ({
-        value: data[optionName]._id,
-        label: data[optionName].name,
-        color: data[optionName].color,
-      }))
-      setQualities(qualitiesList)
-    })
+    // api.users.getById(userId).then(({ profession, qualities, ...data }) =>
+    //   setData(prevState => ({
+    //     ...prevState,
+    //     ...data,
+    //     qualities: transformData(qualities),
+    //     profession: profession._id,
+    //   }))
+    // )
+    // api.professions.fetchAll().then(data => {
+    //   const professionsList = Object.keys(data).map(professionName => ({
+    //     label: data[professionName].name,
+    //     value: data[professionName]._id,
+    //   }))
+    //   setProfession(professionsList)
+    // })
+    // api.qualities.fetchAll().then(data => {
+    //   const qualitiesList = Object.keys(data).map(optionName => ({
+    //     value: data[optionName]._id,
+    //     label: data[optionName].name,
+    //     color: data[optionName].color,
+    //   }))
+    //   setQualities(qualitiesList)
+    // })
   }, [])
   useEffect(() => {
     if (data._id) setIsLoading(false)

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { paginate } from '../../../utils/paginate'
 import Pagination from '../../common/pagination'
-import api from '../../../api'
+// import api from '../../../api'
 import GroupList from '../../common/groupList'
 import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
@@ -33,9 +33,9 @@ const UsersListPage = () => {
     console.log(newArray)
   }
 
-  useEffect(() => {
-    api.professions.fetchAll().then(data => setProfession(data))
-  }, [])
+  // useEffect(() => {
+  //   api.professions.fetchAll().then(data => setProfession(data))
+  // }, [])
 
   useEffect(() => {
     setCurrentPage(1)
