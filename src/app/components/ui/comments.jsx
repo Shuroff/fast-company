@@ -1,29 +1,15 @@
 import { orderBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
-// import api from "../../api";
-import { useParams } from 'react-router-dom'
 import { useComments } from '../../hooks/useComments'
 import CommentsList, { AddCommentForm } from '../common/comments'
 
 const Comments = () => {
-  const { userId } = useParams()
-  const [comments, setComments] = useState([])
-  const { createComment } = useComments()
-  useEffect(() => {
-    // api.comments
-    //     .fetchCommentsForUser(userId)
-    //     .then((data) => setComments(data));
-  }, [])
+  const { isLoading, comments, createComment, removeComment } = useComments()
   const handleSubmit = data => {
     createComment(data)
-    // api.comments
-    //     .add({ ...data, pageId: userId })
-    //     .then((data) => setComments([...comments, data]));
   }
   const handleRemoveComment = id => {
-    // api.comments.remove(id).then((id) => {
-    //     setComments(comments.filter((x) => x._id !== id));
-    // });
+    removeComment(id)
   }
   const sortedComments = orderBy(comments, ['created_at'], ['desc'])
   return (
@@ -39,10 +25,14 @@ const Comments = () => {
           <div className='card-body '>
             <h2>Comments</h2>
             <hr />
-            <CommentsList
-              comments={sortedComments}
-              onRemove={handleRemoveComment}
-            />
+            {!isLoading ? (
+              <CommentsList
+                comments={sortedComments}
+                onRemove={handleRemoveComment}
+              />
+            ) : (
+              'Loading comments'
+            )}
           </div>
         </div>
       )}

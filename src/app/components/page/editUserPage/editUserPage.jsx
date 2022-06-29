@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { validator } from '../../../utils/validator'
-// import api from '../../../api'
 import TextField from '../../common/form/textField'
 import SelectField from '../../common/form/selectField'
 import RadioField from '../../common/form/radioField'
 import MultiSelectField from '../../common/form/multiSelectField'
 import BackHistoryButton from '../../common/backButton'
+import { useProfessions } from '../../../hooks/useProfession'
+import { useQuality } from '../../../hooks/useQuality'
 
 const EditUserPage = () => {
   const { userId } = useParams()
@@ -19,8 +20,8 @@ const EditUserPage = () => {
     sex: 'male',
     qualities: [],
   })
-  const [professions, setProfession] = useState([])
-  const [qualities, setQualities] = useState([])
+  const { professions } = useProfessions()
+  const { qualities } = useQuality()
   const [errors, setErrors] = useState({})
   const getProfessionById = id => {
     for (const prof of professions) {
