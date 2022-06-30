@@ -18,6 +18,12 @@ const userService = {
     )
     return data
   },
+  editUser: async ({ userId, payload }) => {
+    const { data } = await httpService.patch(userEndpoint + userId, {
+      ...payload,
+    })
+    return data
+  },
 }
 
 export default userService

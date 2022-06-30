@@ -9,6 +9,8 @@ import BackHistoryButton from '../../common/backButton'
 import { useProfessions } from '../../../hooks/useProfession'
 import { useQuality } from '../../../hooks/useQuality'
 import { useUser } from '../../../hooks/useUsers'
+import { toast } from 'react-toastify'
+import { useAuth } from '../../../hooks/useAuth'
 
 const EditUserPage = () => {
   const { userId } = useParams()
@@ -24,48 +26,35 @@ const EditUserPage = () => {
   const { professions } = useProfessions()
   const { qualities } = useQuality()
   const { getUserById } = useUser()
-  console.log(professions)
-  console.log(qualities)
+  const { editUser, currentUser } = useAuth()
+  console.log('currentUser', currentUser)
+  // const [user, setUser] = useState(getUserById(userId))
   const [errors, setErrors] = useState({})
 
-  const getProfessionById = id => professions.find(prof => prof._id === id)
-
-  const getQualities = elements => {
-    const qualitiesArray = []
-    for (const elem of elements) {
-      for (const quality in qualities) {
-        if (elem.value === qualities[quality].value) {
-          qualitiesArray.push({
-            _id: qualities[quality].value,
-            name: qualities[quality].label,
-            color: qualities[quality].color,
-          })
-        }
-      }
-    }
-    return qualitiesArray
-  }
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
-    const { profession, qualities } = data
-      // api.users
-      //   .update(userId, {
-      //     ...data,
-      //     profession: getProfessionById(profession),
-      //     qualities: getQualities(qualities),
-      //   })
-      .then(data => history.push(`/users/${data._id}`))
-    console.log({
-      ...data,
-      profession: getProfessionById(profession),
-      qualities: getQualities(qualities),
-    })
+    data._id = userId
+    console.log(data)
+    try {
+      const res = await editUser({ userId, payload: data })
+      console.log(res)
+    } catch (error) {
+      toast(error)
+      console.log(error)
+    }
   }
   const transformData = data => {
     return data.map(qual => ({ label: qual.name, value: qual._id }))
   }
+  const getQualities = () => {
+    const filteredQualities = qualities.filter(qual =>
+      data.qualities.includes(qual._id)
+    )
+    return transformData(filteredQualities)
+  }
+
   const transformQualities = data => {
     return data.map(qual => ({
       value: qual._id,
@@ -73,26 +62,19 @@ const EditUserPage = () => {
       color: qual.color,
     }))
   }
-  console.log('transQual', transformQualities(qualities))
+
   useEffect(() => {
     const user = getUserById(userId)
-    console.log('user', user)
-    setData({
-      name: user.name,
-      email: user.email,
-      profession: user.profession,
-      sex: user.sex,
-      qualities: user.qualities,
-    })
+    if (user) {
+      setData({
+        name: user.name,
+        email: user.email,
+        profession: user.profession,
+        sex: user.sex,
+        qualities: user.qualities,
+      })
+    }
     setIsLoading(false)
-    // api.qualities.fetchAll().then(data => {
-    //   const qualitiesList = Object.keys(data).map(optionName => ({
-    //     value: data[optionName]._id,
-    //     label: data[optionName].name,
-    //     color: data[optionName].color,
-    //   }))
-    //   setQualities(qualitiesList)
-    // })
   }, [])
   useEffect(() => {
     if (data._id) setIsLoading(false)
@@ -170,7 +152,7 @@ const EditUserPage = () => {
                 label='Выберите ваш пол'
               />
               <MultiSelectField
-                defaultValue={data.qualities}
+                defaultValue={getQualities()}
                 options={transformQualities(qualities)}
                 onChange={handleChange}
                 name='qualities'
