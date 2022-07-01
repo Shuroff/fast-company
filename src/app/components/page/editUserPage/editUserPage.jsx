@@ -15,31 +15,35 @@ import { useAuth } from '../../../hooks/useAuth'
 const EditUserPage = () => {
   const { userId } = useParams()
   const history = useHistory()
-  const [isLoading, setIsLoading] = useState(true)
-  const [data, setData] = useState({
+  const { professions } = useProfessions()
+  const { qualities } = useQuality()
+  const { getUserById, isLoading, updateUsers } = useUser()
+  const [loadQual, setLoadQual] = useState(true)
+  const { editUser, currentUser } = useAuth()
+  const [errors, setErrors] = useState({})
+  if (userId !== currentUser._id) {
+    history.goBack()
+  }
+  const initialState = {
     name: '',
     email: '',
     profession: '',
     sex: 'male',
     qualities: [],
-  })
-  const { professions } = useProfessions()
-  const { qualities } = useQuality()
-  const { getUserById } = useUser()
-  const { editUser, currentUser } = useAuth()
-  console.log('currentUser', currentUser)
-  // const [user, setUser] = useState(getUserById(userId))
-  const [errors, setErrors] = useState({})
-
+  }
+  const [data, setData] = useState(initialState)
   const handleSubmit = async e => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
     data._id = userId
+    data.qualities = data.qualities.map(qual => qual.value)
     console.log(data)
     try {
       const res = await editUser({ userId, payload: data })
       console.log(res)
+      updateUsers(data)
+      history.goBack()
     } catch (error) {
       toast(error)
       console.log(error)
@@ -62,7 +66,7 @@ const EditUserPage = () => {
       color: qual.color,
     }))
   }
-
+  let userQualities = getQualities()
   useEffect(() => {
     const user = getUserById(userId)
     if (user) {
@@ -71,15 +75,18 @@ const EditUserPage = () => {
         email: user.email,
         profession: user.profession,
         sex: user.sex,
-        qualities: user.qualities,
+        qualities: user.qualities || [],
       })
     }
-    setIsLoading(false)
-  }, [])
+    userQualities = getQualities()
+  }, [isLoading])
   useEffect(() => {
-    if (data._id) setIsLoading(false)
-  }, [data])
-
+    if (userQualities.length !== 0) {
+      setLoadQual(false)
+    }
+  }, [userQualities])
+  console.log('userQualities', userQualities)
+  useEffect(() => {}, [data.qualities])
   const validatorConfig = {
     email: {
       isRequired: {
@@ -98,12 +105,14 @@ const EditUserPage = () => {
   useEffect(() => {
     validate()
   }, [data])
+
   const handleChange = target => {
     setData(prevState => ({
       ...prevState,
       [target.name]: target.value,
     }))
   }
+
   const validate = () => {
     const errors = validator(data, validatorConfig)
     setErrors(errors)
@@ -151,13 +160,17 @@ const EditUserPage = () => {
                 onChange={handleChange}
                 label='Выберите ваш пол'
               />
-              <MultiSelectField
-                defaultValue={getQualities()}
-                options={transformQualities(qualities)}
-                onChange={handleChange}
-                name='qualities'
-                label='Выберите ваши качества'
-              />
+              {!loadQual ? (
+                <MultiSelectField
+                  defaultValue={userQualities}
+                  options={transformQualities(qualities)}
+                  onChange={handleChange}
+                  name='qualities'
+                  label='Выберите ваши качества'
+                />
+              ) : (
+                ''
+              )}
               <button
                 type='submit'
                 disabled={!isValid}

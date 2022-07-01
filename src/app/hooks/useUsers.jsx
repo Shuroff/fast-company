@@ -38,8 +38,21 @@ const UserProvider = ({ children }) => {
   function getUserById(id) {
     return users.find(u => u._id === id)
   }
+  function updateUsers(newUser) {
+    console.log(newUser)
+    setUsers(prevState => {
+      return prevState.map(user => {
+        if (user._id === newUser._id) {
+          return { ...user, ...newUser }
+        }
+        return user
+      })
+    })
+  }
   return (
-    <UserContext.Provider value={{ users, getUserById }}>
+    <UserContext.Provider
+      value={{ users, getUserById, isLoading, updateUsers }}
+    >
       {!isLoading ? children : 'loading...'}
     </UserContext.Provider>
   )
