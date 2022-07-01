@@ -11,80 +11,72 @@ import { useQuality } from '../../../hooks/useQuality'
 import { useUser } from '../../../hooks/useUsers'
 import { toast } from 'react-toastify'
 import { useAuth } from '../../../hooks/useAuth'
+import qualityService from '../../../services/quality.service'
 
 const EditUserPage = () => {
   const { userId } = useParams()
   const history = useHistory()
-  const { professions } = useProfessions()
-  const { qualities } = useQuality()
-  const { getUserById, isLoading, updateUsers } = useUser()
-  const [loadQual, setLoadQual] = useState(true)
-  const { editUser, currentUser } = useAuth()
+  const { professions, isLoading: professionLoading } = useProfessions()
+  const { qualities, isLoading: qualitiesLoading } = useQuality()
+  const [data, setData] = useState()
+  const { getUserById, updateUsers } = useUser()
+  const [isLoading, setIsLoading] = useState(true)
+  const { updateUserData, currentUser } = useAuth()
   const [errors, setErrors] = useState({})
-  if (userId !== currentUser._id) {
-    history.goBack()
-  }
-  const initialState = {
-    name: '',
-    email: '',
-    profession: '',
-    sex: 'male',
-    qualities: [],
-  }
-  const [data, setData] = useState(initialState)
+  const professionsList = professions.map(p => ({
+    label: p.name,
+    value: p._id,
+  }))
+  const qualitiesList = professions.map(p => ({
+    label: p.name,
+    value: p._id,
+  }))
   const handleSubmit = async e => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
-    data._id = userId
-    data.qualities = data.qualities.map(qual => qual.value)
-    console.log(data)
-    try {
-      const res = await editUser({ userId, payload: data })
-      console.log(res)
-      updateUsers(data)
-      history.goBack()
-    } catch (error) {
-      toast(error)
-      console.log(error)
-    }
   }
   const transformData = data => {
-    return data.map(qual => ({ label: qual.name, value: qual._id }))
+    return getQualitiesListByIds(data).map(qual => ({
+      value: qual._id,
+      label: qual.name,
+      color: qual.color,
+    }))
   }
+  useEffect(() => {
+    if (!professionLoading && !qualitiesLoading && currentUser && !data) {
+      setData({
+        ...currentUser,
+        qualities: transformData(currentUser.qualities),
+      })
+    }
+  }, [professionLoading, qualitiesLoading, currentUser, data])
+
+  useEffect(() => {
+    if (data && isLoading) {
+      setIsLoading(false)
+    }
+  }, [data])
   const getQualities = () => {
     const filteredQualities = qualities.filter(qual =>
       data.qualities.includes(qual._id)
     )
     return transformData(filteredQualities)
   }
-
-  const transformQualities = data => {
-    return data.map(qual => ({
-      value: qual._id,
-      label: qual.name,
-      color: qual.color,
-    }))
+  function getQualitiesListByIds(qualitiesIds) {
+    const qualitiesArray = []
+    for (const qualId of qualitiesIds) {
+      for (const quality of qualities) {
+        if (qualId === quality._id) {
+          qualitiesArray.push(quality)
+          break
+        }
+      }
+    }
+    return qualitiesArray
   }
   let userQualities = getQualities()
-  useEffect(() => {
-    const user = getUserById(userId)
-    if (user) {
-      setData({
-        name: user.name,
-        email: user.email,
-        profession: user.profession,
-        sex: user.sex,
-        qualities: user.qualities || [],
-      })
-    }
-    userQualities = getQualities()
-  }, [isLoading])
-  useEffect(() => {
-    if (userQualities.length !== 0) {
-      setLoadQual(false)
-    }
-  }, [userQualities])
+
   console.log('userQualities', userQualities)
   useEffect(() => {}, [data.qualities])
   const validatorConfig = {
@@ -143,7 +135,7 @@ const EditUserPage = () => {
               <SelectField
                 label='Выбери свою профессию'
                 defaultOption='Choose...'
-                options={transformData(professions)}
+                options={transformData(professionsList)}
                 name='profession'
                 onChange={handleChange}
                 value={data.profession}
@@ -160,17 +152,14 @@ const EditUserPage = () => {
                 onChange={handleChange}
                 label='Выберите ваш пол'
               />
-              {!loadQual ? (
-                <MultiSelectField
-                  defaultValue={userQualities}
-                  options={transformQualities(qualities)}
-                  onChange={handleChange}
-                  name='qualities'
-                  label='Выберите ваши качества'
-                />
-              ) : (
-                ''
-              )}
+
+              <MultiSelectField
+                defaultValue={userQualities}
+                options={qualitiesList}
+                onChange={handleChange}
+                name='qualities'
+                label='Выберите ваши качества'
+              />
               <button
                 type='submit'
                 disabled={!isValid}
