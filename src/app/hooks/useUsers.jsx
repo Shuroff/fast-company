@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import userService from '../services/user.service'
 import { toast } from 'react-toastify'
+import { useAuth } from './useAuth'
 const UserContext = createContext()
 
 export const useUser = () => {
@@ -10,6 +11,7 @@ export const useUser = () => {
 
 const UserProvider = ({ children }) => {
   const [users, setUsers] = useState([])
+  const { currentUser } = useAuth()
   const [isLoading, setIsLoading] = useState(null)
   const [error, setError] = useState(null)
   useEffect(() => {
@@ -30,6 +32,18 @@ const UserProvider = ({ children }) => {
       errorCatcher(error)
     }
   }
+  useEffect(() => {
+    if (!isLoading) {
+      setUsers(prevState =>
+        prevState.map(u => {
+          if (u._id === currentUser._id) {
+            return currentUser
+          }
+          return u
+        })
+      )
+    }
+  }, [currentUser])
   function errorCatcher(error) {
     const { message } = error
     setError(message)

@@ -18,10 +18,11 @@ const userService = {
     )
     return data
   },
-  editUser: async ({ userId, payload }) => {
-    const { data } = await httpService.patch(userEndpoint + userId, {
-      ...payload,
-    })
+  update: async payload => {
+    const { data } = await httpService.patch(
+      userEndpoint + localStorageService.getUserId(),
+      payload
+    )
     return data
   },
 }
