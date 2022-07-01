@@ -111,7 +111,7 @@ const AuthProvider = ({ children }) => {
       setIsLoading(false)
     }
   }
-  async function updateUserData({ data }) {
+  async function updateUserData(data) {
     try {
       const { content } = await userService.update(data)
       setCurrentUser(content)

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { validator } from '../../../utils/validator'
 import TextField from '../../common/form/textField'
 import SelectField from '../../common/form/selectField'
@@ -11,10 +11,8 @@ import { useQuality } from '../../../hooks/useQuality'
 import { useUser } from '../../../hooks/useUsers'
 import { toast } from 'react-toastify'
 import { useAuth } from '../../../hooks/useAuth'
-import qualityService from '../../../services/quality.service'
 
 const EditUserPage = () => {
-  const { userId } = useParams()
   const history = useHistory()
   const { professions, isLoading: professionLoading } = useProfessions()
   const { qualities, isLoading: qualitiesLoading } = useQuality()
@@ -27,7 +25,7 @@ const EditUserPage = () => {
     label: p.name,
     value: p._id,
   }))
-  const qualitiesList = professions.map(p => ({
+  const qualitiesList = qualities.map(p => ({
     label: p.name,
     value: p._id,
   }))
@@ -35,9 +33,21 @@ const EditUserPage = () => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
+    try {
+      console.log(data)
+      const res = await updateUserData({
+        ...data,
+        qualities: data.qualities.map(q => q.value),
+      })
+      console.log(res)
+      history.push(`/users/${currentUser._id}`)
+    } catch (error) {
+      console.log(error)
+      toast(error)
+    }
   }
   const transformData = data => {
-    return getQualitiesListByIds(data).map(qual => ({
+    return data.map(qual => ({
       value: qual._id,
       label: qual.name,
       color: qual.color,
@@ -47,7 +57,6 @@ const EditUserPage = () => {
     if (!professionLoading && !qualitiesLoading && currentUser && !data) {
       setData({
         ...currentUser,
-        qualities: transformData(currentUser.qualities),
       })
     }
   }, [professionLoading, qualitiesLoading, currentUser, data])
@@ -55,6 +64,7 @@ const EditUserPage = () => {
   useEffect(() => {
     if (data && isLoading) {
       setIsLoading(false)
+      console.log(getQualities())
     }
   }, [data])
   const getQualities = () => {
@@ -63,22 +73,6 @@ const EditUserPage = () => {
     )
     return transformData(filteredQualities)
   }
-  function getQualitiesListByIds(qualitiesIds) {
-    const qualitiesArray = []
-    for (const qualId of qualitiesIds) {
-      for (const quality of qualities) {
-        if (qualId === quality._id) {
-          qualitiesArray.push(quality)
-          break
-        }
-      }
-    }
-    return qualitiesArray
-  }
-  let userQualities = getQualities()
-
-  console.log('userQualities', userQualities)
-  useEffect(() => {}, [data.qualities])
   const validatorConfig = {
     email: {
       isRequired: {
@@ -135,7 +129,7 @@ const EditUserPage = () => {
               <SelectField
                 label='Выбери свою профессию'
                 defaultOption='Choose...'
-                options={transformData(professionsList)}
+                options={professionsList}
                 name='profession'
                 onChange={handleChange}
                 value={data.profession}
@@ -154,7 +148,7 @@ const EditUserPage = () => {
               />
 
               <MultiSelectField
-                defaultValue={userQualities}
+                defaultValue={getQualities()}
                 options={qualitiesList}
                 onChange={handleChange}
                 name='qualities'
