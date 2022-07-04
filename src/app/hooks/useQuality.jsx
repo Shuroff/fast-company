@@ -14,8 +14,8 @@ export const QualityProvider = ({ children }) => {
   const [qualities, setQualities] = useState([])
   async function getQualityList() {
     try {
-      const qualities = await qualityService.get()
-      setQualities(qualities)
+      const content = await qualityService.fetchAll()
+      setQualities(content)
       setIsLoading(false)
     } catch (error) {
       errorCatcher(error)

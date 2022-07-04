@@ -7,15 +7,22 @@ import RadioField from '../../common/form/radioField'
 import MultiSelectField from '../../common/form/multiSelectField'
 import BackHistoryButton from '../../common/backButton'
 import { useProfessions } from '../../../hooks/useProfession'
-import { useQuality } from '../../../hooks/useQuality'
 import { useUser } from '../../../hooks/useUsers'
 import { toast } from 'react-toastify'
 import { useAuth } from '../../../hooks/useAuth'
+import { useSelector } from 'react-redux'
+import {
+  getQualitiesLoadingStatus,
+  getQualities,
+} from '../../../store/qualities'
 
 const EditUserPage = () => {
   const history = useHistory()
   const { professions, isLoading: professionLoading } = useProfessions()
-  const { qualities, isLoading: qualitiesLoading } = useQuality()
+
+  const qualities = useSelector(getQualities())
+  const qualitiesLoading = useSelector(getQualitiesLoadingStatus())
+
   const [data, setData] = useState()
   const { getUserById, updateUsers } = useUser()
   const [isLoading, setIsLoading] = useState(true)
@@ -64,10 +71,10 @@ const EditUserPage = () => {
   useEffect(() => {
     if (data && isLoading) {
       setIsLoading(false)
-      console.log(getQualities())
+      console.log(filterQualities())
     }
   }, [data])
-  const getQualities = () => {
+  const filterQualities = () => {
     const filteredQualities = qualities.filter(qual =>
       data.qualities.includes(qual._id)
     )
@@ -148,7 +155,7 @@ const EditUserPage = () => {
               />
 
               <MultiSelectField
-                defaultValue={getQualities()}
+                defaultValue={filterQualities()}
                 options={qualitiesList}
                 onChange={handleChange}
                 name='qualities'
