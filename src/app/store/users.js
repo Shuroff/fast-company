@@ -55,7 +55,7 @@ const authRequested = createAction('users/authRequested')
 const userCreateRequested = createAction('users/userCreateRequested')
 const createUserFailed = createAction('users/createUserFailed')
 export const signUp =
-  ({ email, password }) =>
+  ({ email, password, ...rest }) =>
   async dispatch => {
     dispatch(authRequested())
     try {
@@ -73,6 +73,7 @@ export const signUp =
           )
             .toString(36)
             .substring(7)}.svg`,
+          ...rest,
         })
       )
     } catch (error) {
@@ -86,6 +87,7 @@ function createUser(payload) {
     dispatch(userCreateRequested())
     try {
       const { content } = await userService.create(payload)
+      console.log(content)
       dispatch(userCreated(content))
     } catch (error) {
       console.log(error)

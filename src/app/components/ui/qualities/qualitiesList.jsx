@@ -18,7 +18,9 @@ const QualitiesList = ({ userQualities }) => {
   }, [])
 
   const filteredQualities =
-    !isLoading && qualities.filter(q => userQualities.includes(q._id))
+    !isLoading &&
+    userQualities &&
+    qualities.filter(q => userQualities.includes(q._id))
   return (
     <>
       {!isLoading
