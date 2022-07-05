@@ -87,7 +87,6 @@ function createUser(payload) {
     dispatch(userCreateRequested())
     try {
       const { content } = await userService.create(payload)
-      console.log(content)
       dispatch(userCreated(content))
     } catch (error) {
       console.log(error)
