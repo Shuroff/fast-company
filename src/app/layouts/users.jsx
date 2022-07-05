@@ -4,28 +4,25 @@ import EditUserPage from '../components/page/editUserPage'
 import UserPage from '../components/page/userPage'
 import UsersListPage from '../components/page/usersListPage'
 import { useAuth } from '../hooks/useAuth'
-import UserProvider from '../hooks/useUsers'
 const Users = () => {
   const params = useParams()
   const { userId, edit } = params
   const { currentUser } = useAuth()
   return (
     <>
-      <UserProvider>
-        {userId ? (
-          edit ? (
-            userId === currentUser._id ? (
-              <EditUserPage />
-            ) : (
-              <Redirect to={`/users/${currentUser._id}/edit`} />
-            )
+      {userId ? (
+        edit ? (
+          userId === currentUser._id ? (
+            <EditUserPage />
           ) : (
-            <UserPage userId={userId} />
+            <Redirect to={`/users/${currentUser._id}/edit`} />
           )
         ) : (
-          <UsersListPage />
-        )}
-      </UserProvider>
+          <UserPage userId={userId} />
+        )
+      ) : (
+        <UsersListPage />
+      )}
     </>
   )
 }

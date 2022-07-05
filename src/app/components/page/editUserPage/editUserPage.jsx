@@ -6,8 +6,6 @@ import SelectField from '../../common/form/selectField'
 import RadioField from '../../common/form/radioField'
 import MultiSelectField from '../../common/form/multiSelectField'
 import BackHistoryButton from '../../common/backButton'
-import { useProfessions } from '../../../hooks/useProfession'
-import { useUser } from '../../../hooks/useUsers'
 import { toast } from 'react-toastify'
 import { useAuth } from '../../../hooks/useAuth'
 import { useSelector } from 'react-redux'
@@ -15,27 +13,35 @@ import {
   getQualitiesLoadingStatus,
   getQualities,
 } from '../../../store/qualities'
+import {
+  getProfessions,
+  getProfessionsLoadingStatus,
+} from '../../../store/professions'
 
 const EditUserPage = () => {
   const history = useHistory()
-  const { professions, isLoading: professionLoading } = useProfessions()
-
+  const professions = useSelector(getProfessions())
+  const professionsLoading = useSelector(getProfessionsLoadingStatus())
+  console.log(professions)
   const qualities = useSelector(getQualities())
   const qualitiesLoading = useSelector(getQualitiesLoadingStatus())
 
   const [data, setData] = useState()
-  const { getUserById, updateUsers } = useUser()
   const [isLoading, setIsLoading] = useState(true)
   const { updateUserData, currentUser } = useAuth()
   const [errors, setErrors] = useState({})
-  const professionsList = professions.map(p => ({
-    label: p.name,
-    value: p._id,
-  }))
+
+  const professionsList =
+    !professionsLoading &&
+    professions.map(p => ({
+      label: p.name,
+      value: p._id,
+    }))
   const qualitiesList = qualities.map(p => ({
     label: p.name,
     value: p._id,
   }))
+  console.log(professionsLoading, qualitiesLoading, currentUser, data)
   const handleSubmit = async e => {
     e.preventDefault()
     const isValid = validate()
@@ -61,12 +67,12 @@ const EditUserPage = () => {
     }))
   }
   useEffect(() => {
-    if (!professionLoading && !qualitiesLoading && currentUser && !data) {
+    if (!professionsLoading && !qualitiesLoading && currentUser && !data) {
       setData({
         ...currentUser,
       })
     }
-  }, [professionLoading, qualitiesLoading, currentUser, data])
+  }, [professionsLoading, qualitiesLoading, currentUser, data])
 
   useEffect(() => {
     if (data && isLoading) {

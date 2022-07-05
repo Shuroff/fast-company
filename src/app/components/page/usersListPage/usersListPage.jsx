@@ -6,9 +6,13 @@ import GroupList from '../../common/groupList'
 import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
 import _ from 'lodash'
-import { useUser } from '../../../hooks/useUsers'
-import { useProfessions } from '../../../hooks/useProfession'
 import { useAuth } from '../../../hooks/useAuth'
+import {
+  getProfessions,
+  getProfessionsLoadingStatus,
+} from '../../../store/professions'
+import { useSelector } from 'react-redux'
+import { getUsers } from '../../../store/users'
 const UsersListPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
@@ -16,9 +20,10 @@ const UsersListPage = () => {
   const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
   const pageSize = 8
 
-  const { users } = useUser()
+  const users = useSelector(getUsers())
   const { currentUser } = useAuth()
-  const { isLoading: professionsLoading, professions } = useProfessions()
+  const professionsLoading = useSelector(getProfessionsLoadingStatus())
+  const professions = useSelector(getProfessions())
   const handleDelete = userId => {
     // setUsers(users.filter(user => user._id !== userId))
     console.log(userId)

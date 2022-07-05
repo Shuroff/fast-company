@@ -17,7 +17,8 @@ const QualitiesList = ({ userQualities }) => {
     dispatch(loadQualitiesList())
   }, [])
 
-  const filteredQualities = qualities.filter(q => userQualities.includes(q._id))
+  const filteredQualities =
+    !isLoading && qualities.filter(q => userQualities.includes(q._id))
   return (
     <>
       {!isLoading
