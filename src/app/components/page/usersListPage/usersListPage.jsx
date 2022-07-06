@@ -6,13 +6,12 @@ import GroupList from '../../common/groupList'
 import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
 import _ from 'lodash'
-import { useAuth } from '../../../hooks/useAuth'
 import {
   getProfessions,
   getProfessionsLoadingStatus,
 } from '../../../store/professions'
 import { useSelector } from 'react-redux'
-import { getUsers } from '../../../store/users'
+import { getCurrentUserId, getUsers } from '../../../store/users'
 const UsersListPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
@@ -21,7 +20,7 @@ const UsersListPage = () => {
   const pageSize = 8
 
   const users = useSelector(getUsers())
-  const { currentUser } = useAuth()
+  const currentUserId = useSelector(getCurrentUserId())
   const professionsLoading = useSelector(getProfessionsLoadingStatus())
   const professions = useSelector(getProfessions())
   const handleDelete = userId => {
@@ -72,7 +71,7 @@ const UsersListPage = () => {
               JSON.stringify(user.profession) === JSON.stringify(selectedProf)
           )
         : data
-      return filteredUsers.filter(u => u._id !== currentUser._id)
+      return filteredUsers.filter(u => u._id !== currentUserId)
     }
     const filteredUsers = filterUsers(users)
     const count = filteredUsers.length

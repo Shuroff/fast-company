@@ -2,24 +2,37 @@ import { createAction, createSlice } from '@reduxjs/toolkit'
 import authService from '../services/auth.service'
 import localStorageService from '../services/localStorage.service'
 import userService from '../services/user.service'
+import history from '../utils/history'
 import randomInt from '../utils/randomInt'
+
+const initialState = localStorageService.getAccessToken()
+  ? {
+      entities: null,
+      isLoading: true,
+      error: null,
+      auth: { userId: localStorageService.getUserId() },
+      isLoggedIn: true,
+      dataLoaded: false,
+    }
+  : {
+      entities: null,
+      isLoading: false,
+      error: null,
+      auth: null,
+      isLoggedIn: false,
+      dataLoaded: false,
+    }
 
 const userSlice = createSlice({
   name: 'users',
-  initialState: {
-    entities: null,
-    isLoading: true,
-    error: null,
-    auth: null,
-    isLoggedIn: false,
-  },
+  initialState,
   reducers: {
     usersRequested: state => {
       state.isLoading = true
     },
     usersRecieved: (state, action) => {
       state.entities = action.payload.content
-      state.lastFetch = Date.now()
+      state.dataLoaded = true
       state.isLoading = false
     },
     usersRequestFailed: (state, action) => {
@@ -27,7 +40,8 @@ const userSlice = createSlice({
       state.isLoading = false
     },
     authRequestSuccess: (state, action) => {
-      state.auth = { ...action.payload, isLoggedIn: true }
+      state.auth = action.payload
+      state.isLoggedIn = true
     },
     authRequestFailed: (state, action) => {
       state.error = action.payload
@@ -37,6 +51,15 @@ const userSlice = createSlice({
         state.entities = []
       }
       state.entities.push(action.payload)
+    },
+    userLoggedOut: state => {
+      state.entities = null
+      state.isLoggedIn = false
+      state.auth = null
+      state.dataLoaded = false
+    },
+    updateUserData: (state, action) => {
+      console.log(action.payload)
     },
   },
 })
@@ -49,11 +72,29 @@ const {
   authRequestSuccess,
   authRequestFailed,
   userCreated,
+  userLoggedOut,
+  updateUserData,
 } = actions
 
 const authRequested = createAction('users/authRequested')
 const userCreateRequested = createAction('users/userCreateRequested')
 const createUserFailed = createAction('users/createUserFailed')
+
+export const login =
+  ({ payload, redirect }) =>
+  async dispatch => {
+    const { email, password } = payload
+    dispatch(authRequested())
+    try {
+      const data = await authService.login({ email, password })
+      dispatch(authRequestSuccess({ userId: data.localId }))
+      localStorageService.setTokens(data)
+      history.push(redirect)
+    } catch (error) {
+      dispatch(authRequestFailed(error.message))
+    }
+  }
+
 export const signUp =
   ({ email, password, ...rest }) =>
   async dispatch => {
@@ -81,13 +122,18 @@ export const signUp =
       dispatch(authRequestFailed(error.message))
     }
   }
-
+export const logOut = () => dispatch => {
+  localStorageService.removeAuthData()
+  dispatch(userLoggedOut())
+  history.push('/')
+}
 function createUser(payload) {
   return async function (dispatch) {
     dispatch(userCreateRequested())
     try {
       const { content } = await userService.create(payload)
       dispatch(userCreated(content))
+      history.push('/users')
     } catch (error) {
       console.log(error)
       dispatch(createUserFailed(error.message))
@@ -105,12 +151,23 @@ export const loadUsersList = () => async dispatch => {
   }
 }
 export const getUsers = () => state => state.users.entities
+export const getCurrentUserData = () => state =>
+  state.users.entities
+    ? state.users.entities.find(u => u._id === state.users.auth.userId)
+    : null
 
 export const getUserById = userId => state => {
-  console.log(state)
   if (state.users.entities) {
     return state.users.entities.find(u => u._id === userId)
   }
 }
 
+export const getIsLoggedIn = () => state => state.users.isLoggedIn
+export const getDataStatus = () => state => state.users.dataLoaded
+export const getCurrentUserId = () => state => state.users.auth.userId
+export const getUsersLoadingStatus = () => state => state.users.isLoading
+export const updateUser = payload => dispatch => {
+  console.log(payload)
+  console.log(dispatch)
+}
 export default userReducer

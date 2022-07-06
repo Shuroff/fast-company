@@ -7,7 +7,6 @@ import RadioField from '../../common/form/radioField'
 import MultiSelectField from '../../common/form/multiSelectField'
 import BackHistoryButton from '../../common/backButton'
 import { toast } from 'react-toastify'
-import { useAuth } from '../../../hooks/useAuth'
 import { useSelector } from 'react-redux'
 import {
   getQualitiesLoadingStatus,
@@ -17,18 +16,20 @@ import {
   getProfessions,
   getProfessionsLoadingStatus,
 } from '../../../store/professions'
+import { getCurrentUserData, updateUser } from '../../../store/users'
+import { useDispatch } from 'react-redux'
 
 const EditUserPage = () => {
+  const dispatch = useDispatch()
   const history = useHistory()
   const professions = useSelector(getProfessions())
   const professionsLoading = useSelector(getProfessionsLoadingStatus())
-  console.log(professions)
   const qualities = useSelector(getQualities())
   const qualitiesLoading = useSelector(getQualitiesLoadingStatus())
 
   const [data, setData] = useState()
   const [isLoading, setIsLoading] = useState(true)
-  const { updateUserData, currentUser } = useAuth()
+  const currentUser = useSelector(getCurrentUserData())
   const [errors, setErrors] = useState({})
 
   const professionsList =
@@ -41,18 +42,16 @@ const EditUserPage = () => {
     label: p.name,
     value: p._id,
   }))
-  console.log(professionsLoading, qualitiesLoading, currentUser, data)
   const handleSubmit = async e => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
     try {
-      console.log(data)
-      const res = await updateUserData({
+      updateUser({
         ...data,
         qualities: data.qualities.map(q => q.value),
-      })
-      console.log(res)
+      })()
+
       history.push(`/users/${currentUser._id}`)
     } catch (error) {
       console.log(error)
@@ -77,7 +76,6 @@ const EditUserPage = () => {
   useEffect(() => {
     if (data && isLoading) {
       setIsLoading(false)
-      console.log(filterQualities())
     }
   }, [data])
   const filterQualities = () => {
