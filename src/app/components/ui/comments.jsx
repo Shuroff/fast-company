@@ -1,10 +1,21 @@
 import { orderBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useComments } from '../../hooks/useComments'
+import {
+  getCommentsLoadingStatus,
+  loadCommentsList,
+} from '../../store/comments'
 import CommentsList, { AddCommentForm } from '../common/comments'
 
 const Comments = () => {
-  const { isLoading, comments, createComment, removeComment } = useComments()
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(loadCommentsList())
+  }, [])
+  // const { isLoading, comments, createComment, removeComment } = useComments()
+  const isLoading = useSelector(getCommentsLoadingStatus())
   const handleSubmit = data => {
     createComment(data)
   }
