@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
 import { validator } from '../../../utils/validator'
 import TextField from '../../common/form/textField'
 import SelectField from '../../common/form/selectField'
 import RadioField from '../../common/form/radioField'
 import MultiSelectField from '../../common/form/multiSelectField'
 import BackHistoryButton from '../../common/backButton'
-import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
 import {
   getQualitiesLoadingStatus,
@@ -21,7 +19,6 @@ import { useDispatch } from 'react-redux'
 
 const EditUserPage = () => {
   const dispatch = useDispatch()
-  const history = useHistory()
   const professions = useSelector(getProfessions())
   const professionsLoading = useSelector(getProfessionsLoadingStatus())
   const qualities = useSelector(getQualities())
@@ -42,21 +39,17 @@ const EditUserPage = () => {
     label: p.name,
     value: p._id,
   }))
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
-    try {
+
+    dispatch(
       updateUser({
         ...data,
-        qualities: data.qualities.map(q => q.value),
-      })()
-
-      history.push(`/users/${currentUser._id}`)
-    } catch (error) {
-      console.log(error)
-      toast(error)
-    }
+        qualities: data.qualities.map(q => q.value || q),
+      })
+    )
   }
   const transformData = data => {
     return data.map(qual => ({
