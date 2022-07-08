@@ -1,26 +1,42 @@
+import { nanoid } from '@reduxjs/toolkit'
 import { orderBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { useComments } from '../../hooks/useComments'
+import { useParams } from 'react-router-dom'
 import {
+  createComment,
+  removeComment,
+  getComments,
   getCommentsLoadingStatus,
   loadCommentsList,
 } from '../../store/comments'
+import { getCurrentUserId } from '../../store/users'
 import CommentsList, { AddCommentForm } from '../common/comments'
 
 const Comments = () => {
+  const { userId } = useParams()
+  const currentUserId = useSelector(getCurrentUserId())
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(loadCommentsList())
-  }, [])
-  // const { isLoading, comments, createComment, removeComment } = useComments()
+    dispatch(loadCommentsList(userId))
+  }, [userId])
+
   const isLoading = useSelector(getCommentsLoadingStatus())
+  const comments = useSelector(getComments())
   const handleSubmit = data => {
-    createComment(data)
+    dispatch(
+      createComment({
+        ...data,
+        _id: nanoid(),
+        pageId: userId,
+        created_at: Date.now(),
+        userId: currentUserId,
+      })
+    )
   }
   const handleRemoveComment = id => {
-    removeComment(id)
+    dispatch(removeComment(id))
   }
   const sortedComments = orderBy(comments, ['created_at'], ['desc'])
   return (

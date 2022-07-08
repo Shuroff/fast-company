@@ -48,7 +48,6 @@ const LoginForm = () => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
-    console.log(data)
     const redirect = history.location.state
       ? history.location.state.from.pathname
       : '/'
