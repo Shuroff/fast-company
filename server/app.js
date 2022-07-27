@@ -1,3 +1,13 @@
+var globalTunnel = require('global-tunnel-ng')
+
+globalTunnel.initialize({
+  host: '10.33.101.131',
+  port: 58228,
+  proxyAuth: 'shde33:shd121', // optional authentication
+})
+process.env.http_proxy = 'http://shde33:shd121@10.33.101.131:58228'
+process.env.https_proxy = 'http://shde33:shd121@10.33.101.131:58228'
+globalTunnel.initialize()
 const express = require('express')
 const mongoose = require('mongoose')
 const config = require('config')
@@ -20,7 +30,9 @@ const PORT = config.get('port') ?? 8080
 // password: fast-cmp-lev
 async function start() {
   try {
-    await mongoose.connect(config.get('mongoUri'))
+    await mongoose.connect(
+      'mongodb://utep6kfoz0cqibibsypc:ZdRwsDiVtMsaNwHco25H@n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/btzrqsftdn4bttx?replicaSet=rs0'
+    )
     console.log('MongoDB connected')
     app.listen(PORT, () => {
       console.log(
