@@ -1,1 +1,7 @@
 mongodb://utep6kfoz0cqibibsypc:ZdRwsDiVtMsaNwHco25H@n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/btzrqsftdn4bttx?replicaSet=rs0
+
+export HTTP_PROXY=http://shde33:shd121@10.33.101.131:58228
+
+
+process.env.HTTP_PROXY = 'http://shde33:shd121@10.33.101.131:58228'
+process.env.HTTPS_PROXY = 'http://shde33:shd121@10.33.101.131:58228'
