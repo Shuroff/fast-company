@@ -28,15 +28,14 @@ const Comments = () => {
     dispatch(
       createComment({
         ...data,
-        _id: nanoid(),
         pageId: userId,
-        created_at: Date.now(),
         userId: currentUserId,
+        // createdAt: Date.now().toString(),
       })
     )
   }
   const handleRemoveComment = id => {
-    dispatch(removeComment(id))
+    dispatch(removeComment({ id }))
   }
   const sortedComments = orderBy(comments, ['created_at'], ['desc'])
   return (

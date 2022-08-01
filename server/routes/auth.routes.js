@@ -58,6 +58,7 @@ router.post('/signInWithPassword', [
   check('email', 'Email не корректный').isEmail().normalizeEmail(),
   check('password', 'Пароль не может быть пустым').exists(),
   async (req, res) => {
+    console.log('ya musor express js')
     try {
       const errors = validationResult(req)
       if (!errors.isEmpty()) {

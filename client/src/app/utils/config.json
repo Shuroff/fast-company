@@ -1,4 +1,4 @@
 {
-  "apiEndpoint": "https://fast-company-course-default-rtdb.europe-west1.firebasedatabase.app/",
-  "isFirebase": true
+  "apiEndpoint": "http://localhost:8080/api/",
+  "isFirebase": false
 }

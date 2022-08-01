@@ -8,7 +8,6 @@ import { getUserById } from '../../../store/users'
 import { useSelector } from 'react-redux'
 const UserPage = ({ userId }) => {
   let user = useSelector(getUserById(userId))
-
   // useEffect(() => {
   //   user = useSelector(getUserById(userId))
   // }, [])

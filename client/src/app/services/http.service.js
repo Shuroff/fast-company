@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { httpAuth } from '../hooks/useAuth'
 import configFile from '../utils/config.json'
 import authService from './auth.service'
 import localStorageService from './localStorage.service'
@@ -11,26 +10,39 @@ const http = axios.create({
 
 http.interceptors.request.use(
   async function (config) {
+    const expiresDate = localStorageService.getTokenExpiresDate()
+    const refreshToken = localStorageService.getRefreshToken()
+    const isExpired = refreshToken && expiresDate < Date.now()
+
     if (configFile.isFirebase) {
       const containSlash = /\/$/gi.test(config.url)
       config.url = containSlash
         ? config.url.slice(0, -1) + '.json'
         : config.url + '.json'
 
-      const expiresDate = localStorageService.getTokenExpiresDate()
-      const refreshToken = localStorageService.getRefreshToken()
-      if (refreshToken && expiresDate < Date.now()) {
+      if (isExpired) {
         const data = await authService.refresh()
         localStorageService.setTokens({
           refreshToken: data.refresh_token,
-          idToken: data.id_token,
+          accessToken: data.accessToken,
           expiresIn: data.expires_in,
-          localId: data.user_id,
+          userId: data.userId,
         })
       }
+    } else {
+      // if (isExpired) {
+      //   console.log('isExpired')
+      //   const data = await authService.refresh()
+      //   console.log('expired data', data)
+      //   localStorageService.setTokens(data)
+      // }
       const accessToken = localStorageService.getAccessToken()
+      console.log('accessToken', accessToken)
       if (accessToken) {
-        config.params = { ...config.params, auth: accessToken }
+        config.headers = {
+          ...config.headers,
+          Authorization: `Bearer ${accessToken}`,
+        }
       }
     }
 
@@ -52,7 +64,7 @@ http.interceptors.response.use(
     if (configFile.isFirebase) {
       res.data = { content: transformData(res.data) }
     }
-
+    res.data = { content: res.data }
     return res
   },
   function (error) {
