@@ -37,7 +37,6 @@ http.interceptors.request.use(
       //   localStorageService.setTokens(data)
       // }
       const accessToken = localStorageService.getAccessToken()
-      console.log('accessToken', accessToken)
       if (accessToken) {
         config.headers = {
           ...config.headers,

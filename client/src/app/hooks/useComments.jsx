@@ -33,11 +33,9 @@ export const CommentsProvider = ({ children }) => {
     try {
       const { content } = await commentService.createComment(comment)
       setComments(prevState => [...prevState, content])
-      console.log(content)
     } catch (error) {
       errorCatcher(error)
     }
-    console.log(comment)
   }
   async function getComments() {
     try {

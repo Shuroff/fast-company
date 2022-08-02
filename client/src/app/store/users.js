@@ -93,7 +93,6 @@ export const login =
   async dispatch => {
     const { email, password } = payload
     dispatch(authRequested())
-    console.log('users.js', { email, password })
     try {
       const data = await authService.login({ email, password })
       dispatch(authRequestSuccess({ userId: data.userId }))
@@ -130,7 +129,6 @@ export const logOut = () => dispatch => {
 }
 
 export const loadUsersList = () => async dispatch => {
-  console.log('loadUsersList')
   dispatch(usersRequested())
   try {
     const content = await userService.get()
