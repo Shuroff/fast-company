@@ -17,7 +17,7 @@ const commentService = {
     })
     return data
   },
-  removeComment: async commentId => {
+  removeComment: async ({ id: commentId }) => {
     const { data } = await httpService.delete(commentEndpoint + commentId)
     return data
   },

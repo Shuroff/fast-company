@@ -93,6 +93,7 @@ export const login =
   async dispatch => {
     const { email, password } = payload
     dispatch(authRequested())
+    console.log('users.js', { email, password })
     try {
       const data = await authService.login({ email, password })
       dispatch(authRequestSuccess({ userId: data.userId }))

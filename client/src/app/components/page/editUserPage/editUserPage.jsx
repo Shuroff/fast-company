@@ -73,7 +73,7 @@ const EditUserPage = () => {
   }, [data])
   const filterQualities = () => {
     const filteredQualities = qualities.filter(qual =>
-      data.qualities.includes(qual._id)
+      data?.qualities?.includes(qual._id)
     )
     return transformData(filteredQualities)
   }
